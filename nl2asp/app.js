@@ -355,7 +355,7 @@ function renderCharts() {
   renderOutcomes();
 }
 
-fetch("data/leaderboard.json")
+fetch("data/leaderboard.json", { cache: "no-cache" })
   .then(r => r.json())
   .then(d => {
     DATA = d;
