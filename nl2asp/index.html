@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>NL-to-ASP Benchmark</title>
 <meta name="description" content="Leaderboard for the NL-to-ASP benchmark: can a language model turn a natural-language combinatorial problem into a working clingo program?">
-<link rel="stylesheet" href="style.css?v=20261111b">
+<link rel="stylesheet" href="style.css?v=20261111c">
 </head>
 <body>
 <header class="wrap hero">
@@ -24,8 +24,8 @@
       <h2 id="lb-h">Leaderboard</h2>
       <div class="chips" role="group" aria-label="Filter by harness">
         <button type="button" class="chip" data-filter="all" aria-pressed="true">All</button>
-        <button type="button" class="chip" data-filter="agent" aria-pressed="false">Agent</button>
-        <button type="button" class="chip" data-filter="one-call" aria-pressed="false">One call</button>
+        <button type="button" class="chip" data-filter="react" aria-pressed="false">ReAct</button>
+        <button type="button" class="chip" data-filter="baseline" aria-pressed="false">Baseline</button>
       </div>
     </div>
     <p class="note">Solve rate over 3 runs × 97 problems, with its 95% interval. <em>Every run</em>: share of problems solved in all 3 runs. Cost and time are per task: one run of one problem. Entries whose intervals overlap share a rank. Click a row for its per-dataset results.</p>
@@ -54,14 +54,14 @@
       <figure class="card wide">
         <figcaption>
           <h3>Accuracy against cost</h3>
-          <p>The Pareto frontier (dashed line) includes the one-call runs of the frontier models. The agent only
+          <p>The Pareto frontier (dashed line) includes the Baseline runs of the frontier models. ReAct only
             pays for itself at the very top and for smaller models.</p>
           <p class="note">* Run locally: estimated cost on OpenRouter; not part of the Pareto frontier. Granite 4.2 3B
             has no estimate and is not shown.</p>
         </figcaption>
         <div class="legend" aria-hidden="true">
-          <span><i class="dot agent"></i>Agent</span>
-          <span><i class="dot one-call"></i>One call</span>
+          <span><i class="dot react"></i>ReAct</span>
+          <span><i class="dot baseline"></i>Baseline</span>
           <span><i class="dash"></i>Pareto frontier</span>
         </div>
         <div class="chart" id="c-scatter" role="img" aria-label="Scatter plot of solve rate against cost per problem, log scale"></div>
@@ -69,14 +69,27 @@
 
       <figure class="card">
         <figcaption>
-          <h3>What the agent harness adds</h3>
-          <p>The same model run with one call and then with the agent. The weaker the model, the bigger the gain.</p>
+          <h3>What the ReAct harness adds</h3>
+          <p>The same model run with the Baseline (one call, no tools) and with ReAct. The weaker the model, the bigger the gain.</p>
         </figcaption>
         <div class="legend" aria-hidden="true">
-          <span><i class="dot one-call"></i>One call</span>
-          <span><i class="dot agent"></i>Agent</span>
+          <span><i class="dot baseline"></i>Baseline</span>
+          <span><i class="dot react"></i>ReAct</span>
         </div>
-        <div class="chart" id="c-lift" role="img" aria-label="Solve rate of each model with one call and with the agent"></div>
+        <div class="chart" id="c-lift" role="img" aria-label="Solve rate of each model with the Baseline and with ReAct"></div>
+      </figure>
+
+      <figure class="card">
+        <figcaption>
+          <h3>Large against small model, same lab</h3>
+          <p>ReAct closes much of the gap between a lab's small and large model: Haiku trails Opus by 15 points
+            instead of 31, and Luna trails Sol by 31 instead of 73.</p>
+        </figcaption>
+        <div class="legend" aria-hidden="true">
+          <span><i class="dot react"></i>ReAct</span>
+          <span><i class="dot baseline"></i>Baseline</span>
+        </div>
+        <div class="chart" id="c-labs" role="img" aria-label="Solve rate of the small and large model of Anthropic and OpenAI, with each harness"></div>
       </figure>
 
       <figure class="card">
@@ -88,11 +101,11 @@
         <div class="chart" id="c-heat" role="img" aria-label="Heatmap of solve rate per entry and dataset"></div>
       </figure>
 
-      <figure class="card wide">
+      <figure class="card">
         <figcaption>
           <h3>How runs end</h3>
           <p>Strong models rarely fail. Mid-tier models fail by answering wrongly, local models by running out of
-            time, and one-call runs by writing programs that crash.</p>
+            time, and Baseline runs by writing programs that crash.</p>
         </figcaption>
         <div class="legend" aria-hidden="true">
           <span><i class="sw o-solved"></i>Solved</span>
@@ -148,6 +161,6 @@
 </footer>
 
 <div class="tip" id="tip" role="tooltip" hidden></div>
-<script src="app.js?v=20261111b" defer></script>
+<script src="app.js?v=20261111c" defer></script>
 </body>
 </html>

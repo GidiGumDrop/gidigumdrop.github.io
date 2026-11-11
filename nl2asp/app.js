@@ -37,9 +37,9 @@ function svgFor(container, w, h) {
   return el("svg", { viewBox: `0 0 ${w} ${h}`, width: w, height: h, preserveAspectRatio: "xMinYMin meet" }, container);
 }
 function marker(parent, x, y, harness, r = 5) {
-  return harness === "agent"
-    ? el("circle", { cx: x, cy: y, r, style: "fill:var(--agent);stroke:var(--surface);stroke-width:2" }, parent)
-    : el("circle", { cx: x, cy: y, r: r - 0.5, style: "fill:var(--surface);stroke:var(--one-call);stroke-width:2.25" }, parent);
+  return harness === "react"
+    ? el("circle", { cx: x, cy: y, r, style: "fill:var(--react);stroke:var(--surface);stroke-width:2" }, parent)
+    : el("circle", { cx: x, cy: y, r: r - 0.5, style: "fill:var(--surface);stroke:var(--baseline);stroke-width:2.25" }, parent);
 }
 
 /* ---------- Tooltip ---------- */
@@ -242,8 +242,8 @@ function renderLift() {
   const box = document.getElementById("c-lift");
   const W = box.clientWidth;
   const pairs = [];
-  for (const a of DATA.entries.filter(e => e.harness === "agent")) {
-    const b = DATA.entries.find(e => e.harness === "one-call" && e.model === a.model);
+  for (const a of DATA.entries.filter(e => e.harness === "react")) {
+    const b = DATA.entries.find(e => e.harness === "baseline" && e.model === a.model);
     if (b) pairs.push({ model: a.model, agent: a, one: b, gain: a.solve_rate - b.solve_rate });
   }
   pairs.sort((p, q) => q.gain - p.gain);
@@ -262,15 +262,64 @@ function renderLift() {
     const y = m.t + i * row + row / 2;
     text(svg, 0, y + 4, W < 420 ? short(p.model) : p.model, { style: "fill:var(--ink)" });
     el("line", { x1: X(p.one.solve_rate), x2: X(p.agent.solve_rate), y1: y, y2: y, style: "stroke:var(--axis);stroke-width:3;stroke-linecap:round" }, svg);
-    marker(svg, X(p.one.solve_rate), y, "one-call", 6);
-    marker(svg, X(p.agent.solve_rate), y, "agent", 6);
+    marker(svg, X(p.one.solve_rate), y, "baseline", 6);
+    marker(svg, X(p.agent.solve_rate), y, "react", 6);
     const mult = p.agent.cost_per_problem / p.one.cost_per_problem;
     text(svg, W - annW, y - 1, `+${Math.round(p.gain * 100)} pts`, { style: "fill:var(--ink);font-weight:600;font-size:12px" });
     text(svg, W - annW, y + 13, `${mult.toFixed(1)}× cost`, { class: "axis-label" });
-    const html = `<b>${esc(p.model)}</b>One call ${pct(p.one.solve_rate)} → Agent ${pct(p.agent.solve_rate)}<br>` +
+    const html = `<b>${esc(p.model)}</b>Baseline ${pct(p.one.solve_rate)} → ReAct ${pct(p.agent.solve_rate)}<br>` +
       `<span class="muted">Cost per task ${money(p.one.cost_per_problem)} → ${money(p.agent.cost_per_problem)}</span>`;
     hover(el("rect", { x: 0, y: y - row / 2, width: W, height: row, class: "hit" }, svg), html);
   });
+}
+
+/* ---------- Chart 3: large against small model, same lab ---------- */
+const LAB_PAIRS = [["Anthropic", "Claude Haiku 5.5", "Claude Opus 5.5"], ["OpenAI", "GPT-5.6 Luna", "GPT-5.6 Sol"]];
+function renderLabs() {
+  const box = document.getElementById("c-labs");
+  const W = box.clientWidth;
+  const find = (m, h) => DATA.entries.find(e => e.model === m && e.harness === h);
+  const groups = LAB_PAIRS.map(([lab, small, large]) => ({
+    lab, rows: ["react", "baseline"].map(h => ({ h, s: find(small, h), l: find(large, h) })).filter(r => r.s && r.l),
+  })).filter(g => g.rows.length);
+  const head = 22, row = 40, m = { t: 4, b: 30 };
+  const labelW = 84, annW = 76;
+  const x0 = labelW, x1 = W - annW - 8;
+  const H = m.t + groups.reduce((a, g) => a + head + g.rows.length * row, 0) + m.b;
+  const X = v => x0 + v * (x1 - x0);
+  const svg = svgFor(box, W, H);
+  const yb = H - m.b;
+  for (const t of [0, 0.25, 0.5, 0.75, 1]) {
+    el("line", { x1: X(t), x2: X(t), y1: m.t, y2: yb, class: t === 0 ? "baseline" : "gridline" }, svg);
+    text(svg, X(t), yb + 16, pct(t, 0), { "text-anchor": "middle", class: "axis-label" });
+  }
+  let y = m.t;
+  for (const g of groups) {
+    text(svg, 0, y + 15, g.lab, { style: "fill:var(--ink);font-weight:600;font-size:12px" });
+    y += head;
+    for (const r of g.rows) {
+      const cy = y + row / 2 + 6;
+      marker(svg, 5, cy, r.h, 4.5);
+      text(svg, 16, cy + 4, harnessName(r.h));
+      const xs = X(r.s.solve_rate), xl = X(r.l.solve_rate);
+      el("line", { x1: xs, x2: xl, y1: cy, y2: cy, style: "stroke:var(--axis);stroke-width:3;stroke-linecap:round" }, svg);
+      marker(svg, xs, cy, r.h, 6);
+      marker(svg, xl, cy, r.h, 6);
+      // Model names above their dots; when the dots are close, the names split left and right of the midpoint.
+      const ns = short(r.s.model), nl = short(r.l.model);
+      const close = xl - xs < (ns.length + nl.length) * 3 + 8;
+      const mid = (xs + xl) / 2;
+      text(svg, close ? mid - 3 : xs, cy - 11, ns, { "text-anchor": close ? "end" : "middle", class: "axis-label" });
+      text(svg, close ? mid + 3 : xl, cy - 11, nl, { "text-anchor": close ? "start" : "middle", class: "axis-label" });
+      const gap = r.l.solve_rate - r.s.solve_rate;
+      text(svg, W - annW, cy - 1, `${Math.round(gap * 100)} pts gap`, { style: "fill:var(--ink);font-weight:600;font-size:12px" });
+      text(svg, W - annW, cy + 13, `${(r.l.cost_per_problem / r.s.cost_per_problem).toFixed(0)}× cost`, { class: "axis-label" });
+      const html = `<b>${esc(g.lab)} · ${harnessName(r.h)}</b>${esc(r.s.model)} ${pct(r.s.solve_rate)} · ${esc(r.l.model)} ${pct(r.l.solve_rate)}<br>` +
+        `<span class="muted">Cost per task ${money(r.s.cost_per_problem)} against ${money(r.l.cost_per_problem)}</span>`;
+      hover(el("rect", { x: 0, y, width: W, height: row, class: "hit" }, svg), html);
+      y += row;
+    }
+  }
 }
 
 /* ---------- Row labels shared by heatmap and outcome bars ---------- */
@@ -279,7 +328,7 @@ function rowLabel(svg, e, y, narrow) {
   text(svg, 16, y + 4, narrow ? short(e.model) : e.model, { style: "fill:var(--ink)" });
 }
 
-/* ---------- Chart 3: accuracy by dataset ---------- */
+/* ---------- Chart 4: accuracy by dataset ---------- */
 function mix(a, b, t) {
   const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
   const [x, y] = [p(a), p(b)];
@@ -316,7 +365,7 @@ function renderHeat() {
   for (const t of svg.querySelectorAll("text")) t.style.pointerEvents = "none";
 }
 
-/* ---------- Chart 4: how runs end ---------- */
+/* ---------- Chart 5: how runs end ---------- */
 function renderOutcomes() {
   const box = document.getElementById("c-outcomes");
   const W = box.clientWidth, narrow = W < 560;
@@ -351,6 +400,7 @@ function renderOutcomes() {
 function renderCharts() {
   renderScatter();
   renderLift();
+  renderLabs();
   renderHeat();
   renderOutcomes();
 }

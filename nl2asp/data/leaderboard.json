@@ -1,13 +1,13 @@
 {
  "generated": "2026-11-11",
  "harnesses": {
-  "agent": {
-   "name": "Agent",
-   "description": "ReAct agent (agentic-python-coder) with a persistent Python kernel and the clingo skills file",
+  "react": {
+   "name": "ReAct",
+   "description": "ReAct agent loop (agentic-python-coder) with a persistent Python kernel and the clingo skills file",
    "output_cap": 16384
   },
-  "one-call": {
-   "name": "One call",
+  "baseline": {
+   "name": "Baseline",
    "description": "A single model request with the problem; no tools, no skills file",
    "output_cap": 65536
   }
@@ -21,9 +21,9 @@
  },
  "entries": [
   {
-   "id": "agent__gpt-5-6-sol",
+   "id": "react__gpt-5-6-sol",
    "model": "GPT-5.6 Sol",
-   "harness": "agent",
+   "harness": "react",
    "open_weights": false,
    "local": false,
    "runs": 3,
@@ -59,9 +59,9 @@
    "rank": 1
   },
   {
-   "id": "agent__claude-opus-5-5",
+   "id": "react__claude-opus-5-5",
    "model": "Claude Opus 5.5",
-   "harness": "agent",
+   "harness": "react",
    "open_weights": false,
    "local": false,
    "runs": 3,
@@ -97,9 +97,9 @@
    "rank": 1
   },
   {
-   "id": "one-call__gpt-5-6-sol",
+   "id": "baseline__gpt-5-6-sol",
    "model": "GPT-5.6 Sol",
-   "harness": "one-call",
+   "harness": "baseline",
    "open_weights": false,
    "local": false,
    "runs": 3,
@@ -135,9 +135,9 @@
    "rank": 1
   },
   {
-   "id": "agent__gemini-3-8-flash",
+   "id": "react__gemini-3-8-flash",
    "model": "Gemini 3.8 Flash",
-   "harness": "agent",
+   "harness": "react",
    "open_weights": false,
    "local": false,
    "runs": 3,
@@ -173,9 +173,9 @@
    "rank": 1
   },
   {
-   "id": "one-call__claude-opus-5-5",
+   "id": "baseline__claude-opus-5-5",
    "model": "Claude Opus 5.5",
-   "harness": "one-call",
+   "harness": "baseline",
    "open_weights": false,
    "local": false,
    "runs": 3,
@@ -211,9 +211,9 @@
    "rank": 3
   },
   {
-   "id": "agent__glm-5-3-high",
+   "id": "react__glm-5-3-high",
    "model": "GLM-5.3 (high)",
-   "harness": "agent",
+   "harness": "react",
    "open_weights": true,
    "local": false,
    "runs": 3,
@@ -249,9 +249,9 @@
    "rank": 3
   },
   {
-   "id": "agent__deepseek-v4-1-flash",
+   "id": "react__deepseek-v4-1-flash",
    "model": "DeepSeek V4.1 Flash",
-   "harness": "agent",
+   "harness": "react",
    "open_weights": true,
    "local": false,
    "runs": 3,
@@ -287,9 +287,9 @@
    "rank": 3
   },
   {
-   "id": "agent__claude-haiku-5-5",
+   "id": "react__claude-haiku-5-5",
    "model": "Claude Haiku 5.5",
-   "harness": "agent",
+   "harness": "react",
    "open_weights": false,
    "local": false,
    "runs": 3,
@@ -325,9 +325,9 @@
    "rank": 5
   },
   {
-   "id": "agent__muse-glimmer-30b",
+   "id": "react__muse-glimmer-30b",
    "model": "Muse Glimmer 30B",
-   "harness": "agent",
+   "harness": "react",
    "open_weights": true,
    "local": false,
    "runs": 3,
@@ -363,9 +363,9 @@
    "rank": 8
   },
   {
-   "id": "one-call__gemini-3-8-flash",
+   "id": "baseline__gemini-3-8-flash",
    "model": "Gemini 3.8 Flash",
-   "harness": "one-call",
+   "harness": "baseline",
    "open_weights": false,
    "local": false,
    "runs": 3,
@@ -401,9 +401,9 @@
    "rank": 8
   },
   {
-   "id": "agent__gpt-5-6-luna",
+   "id": "react__gpt-5-6-luna",
    "model": "GPT-5.6 Luna",
-   "harness": "agent",
+   "harness": "react",
    "open_weights": false,
    "local": false,
    "runs": 3,
@@ -439,9 +439,9 @@
    "rank": 9
   },
   {
-   "id": "one-call__claude-haiku-5-5",
+   "id": "baseline__claude-haiku-5-5",
    "model": "Claude Haiku 5.5",
-   "harness": "one-call",
+   "harness": "baseline",
    "open_weights": false,
    "local": false,
    "runs": 3,
@@ -477,9 +477,9 @@
    "rank": 10
   },
   {
-   "id": "agent__qwen-3-8-27b",
+   "id": "react__qwen-3-8-27b",
    "model": "Qwen 3.8 27B",
-   "harness": "agent",
+   "harness": "react",
    "open_weights": true,
    "local": true,
    "runs": 3,
@@ -516,9 +516,9 @@
    "rank": 12
   },
   {
-   "id": "agent__gemma-4-26b-a4b",
+   "id": "react__gemma-4-26b-a4b",
    "model": "Gemma 4 26B A4B",
-   "harness": "agent",
+   "harness": "react",
    "open_weights": true,
    "local": false,
    "runs": 3,
@@ -554,9 +554,9 @@
    "rank": 14
   },
   {
-   "id": "one-call__gpt-5-6-luna",
+   "id": "baseline__gpt-5-6-luna",
    "model": "GPT-5.6 Luna",
-   "harness": "one-call",
+   "harness": "baseline",
    "open_weights": false,
    "local": false,
    "runs": 3,
@@ -592,9 +592,9 @@
    "rank": 14
   },
   {
-   "id": "agent__nemotron-3-5-lightning",
+   "id": "react__nemotron-3-5-lightning",
    "model": "Nemotron 3.5 Lightning",
-   "harness": "agent",
+   "harness": "react",
    "open_weights": true,
    "local": true,
    "runs": 3,
@@ -631,9 +631,9 @@
    "rank": 14
   },
   {
-   "id": "agent__granite-4-2-3b",
+   "id": "react__granite-4-2-3b",
    "model": "Granite 4.2 3B",
-   "harness": "agent",
+   "harness": "react",
    "open_weights": true,
    "local": true,
    "runs": 3,
@@ -669,9 +669,9 @@
    "rank": 15
   },
   {
-   "id": "agent__granite-4-2-8b",
+   "id": "react__granite-4-2-8b",
    "model": "Granite 4.2 8B",
-   "harness": "agent",
+   "harness": "react",
    "open_weights": true,
    "local": true,
    "runs": 3,
