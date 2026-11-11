@@ -28,7 +28,7 @@
         <button type="button" class="chip" data-filter="one-call" aria-pressed="false">One call</button>
       </div>
     </div>
-    <p class="note">Solve rate over 3 runs × 97 problems, with its 95% interval. <em>Every run</em>: share of problems solved in all 3 runs. Cost and time are per problem run. Entries whose intervals overlap share a rank. Click a row for its per-dataset results.</p>
+    <p class="note">Solve rate over 3 runs × 97 problems, with its 95% interval. <em>Every run</em>: share of problems solved in all 3 runs. Cost and time are per task: one run of one problem. Entries whose intervals overlap share a rank. Click a row for its per-dataset results.</p>
     <div class="table-scroll">
       <table class="lb" id="lb">
         <thead>
@@ -38,13 +38,14 @@
             <th scope="col" class="hide-sm" data-sort="harness">Harness</th>
             <th scope="col" class="rate-col" data-sort="solve_rate">Solve rate</th>
             <th scope="col" class="num" data-sort="pass_all" title="Share of problems solved in all 3 runs">Every run</th>
-            <th scope="col" class="num" data-sort="cost_per_problem">Cost</th>
-            <th scope="col" class="num hide-sm" data-sort="minutes_per_problem">Time</th>
+            <th scope="col" class="num" data-sort="cost_per_problem" title="API cost of one run of one problem">Cost / task</th>
+            <th scope="col" class="num hide-sm" data-sort="minutes_per_problem" title="Wall-clock time of one run of one problem">Time / task</th>
           </tr>
         </thead>
         <tbody></tbody>
       </table>
     </div>
+    <p class="note">* Run locally: estimated cost on OpenRouter.</p>
   </section>
 
   <section aria-labelledby="charts-h">
@@ -53,13 +54,15 @@
       <figure class="card wide">
         <figcaption>
           <h3>Accuracy against cost</h3>
-          <p>The best-value entries (dashed line) include the one-call runs of the frontier models. The agent only
+          <p>The Pareto frontier (dashed line) includes the one-call runs of the frontier models. The agent only
             pays for itself at the very top and for smaller models.</p>
+          <p class="note">* Run locally: estimated cost on OpenRouter; not part of the Pareto frontier. Granite 4.2 3B
+            has no estimate and is not shown.</p>
         </figcaption>
         <div class="legend" aria-hidden="true">
           <span><i class="dot agent"></i>Agent</span>
           <span><i class="dot one-call"></i>One call</span>
-          <span><i class="dash"></i>Best value so far</span>
+          <span><i class="dash"></i>Pareto frontier</span>
         </div>
         <div class="chart" id="c-scatter" role="img" aria-label="Scatter plot of solve rate against cost per problem, log scale"></div>
       </figure>
@@ -115,7 +118,9 @@
             bootstrap over problems.</li>
           <li>Time limit per problem: ASPBench 20 min, GridPuzzles 10–25 min by size, ZebraLogic, Sudoku-Bench and
             LPCP 30 min.</li>
-          <li>Cost is the measured API cost per problem run. Locally served models show <em>local GPU</em>.</li>
+          <li>Cost is the measured API cost per task (one run of one problem). Models marked * were run locally; their cost is
+            estimated from their own token counts at OpenRouter list prices, with 71% of input tokens at the cache
+            price (the median of the API models' bills). Granite 4.2 3B is not on OpenRouter and has no estimate.</li>
         </ul>
         <h3>Harnesses</h3>
         <dl id="harnesses"></dl>
@@ -128,19 +133,10 @@
             <tr><td>ASPBench</td><td class="num" data-ds="ASPBench"></td><td>constraint check</td></tr>
             <tr><td>GridPuzzles</td><td class="num" data-ds="GridPuzzles"></td><td>exact match</td></tr>
             <tr><td>ZebraLogic</td><td class="num" data-ds="ZebraLogic"></td><td>clue check with clingo</td></tr>
-            <tr><td><a href="https://github.com/SakanaAI/Sudoku-Bench">Sudoku-Bench</a></td><td class="num" data-ds="Sudoku-Bench"></td><td>exact match, unique solution</td></tr>
-            <tr><td><a href="https://github.com/lpcp-contest">LP/CP Contest</a></td><td class="num" data-ds="LPCP"></td><td>exact match, unique answer</td></tr>
+            <tr><td>Sudoku-Bench</td><td class="num" data-ds="Sudoku-Bench"></td><td>exact match, unique solution</td></tr>
+            <tr><td>LP/CP Contest</td><td class="num" data-ds="LPCP"></td><td>exact match, unique answer</td></tr>
           </tbody>
         </table>
-        <h3>Known issues</h3>
-        <ul>
-          <li><strong>Tower of Hanoi (ASPBench):</strong> the validator requires 19 moves; the true minimum is 16,
-            so 16-move answers fail.</li>
-          <li><strong>Dungeon generation (ASPBench):</strong> the validator requires each trap type exactly once,
-            which the statement does not.</li>
-          <li><strong>GridPuzzles:</strong> exact match against one known solution; uniqueness is not verified.</li>
-        </ul>
-        <p class="note">Both affect every entry equally.</p>
       </div>
     </div>
   </section>

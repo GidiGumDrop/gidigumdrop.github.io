@@ -12,7 +12,8 @@ const SVGNS = "http://www.w3.org/2000/svg";
 
 const short = m => SHORT[m] || m;
 const pct = (v, d = 1) => (v * 100).toFixed(d) + "%";
-const money = v => v == null ? "local GPU" : "$" + (v >= 0.1 ? v.toFixed(2) : v >= 0.01 ? v.toFixed(3) : v.toFixed(4));
+const money = v => v == null ? "–" : "$" + (v >= 0.1 ? v.toFixed(2) : v >= 0.01 ? v.toFixed(3) : v.toFixed(4));
+const cost = e => money(e.cost_per_problem) + (e.cost_estimated ? "*" : "");
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
@@ -63,7 +64,9 @@ document.addEventListener("scroll", hideTip, { passive: true });
 
 const entryTip = e => `<b>${esc(e.model)}</b><span class="muted">${harnessName(e.harness)}</span><br>` +
   `${pct(e.solve_rate)} solved <span class="muted">(95%: ${pct(e.ci[0], 0)}–${pct(e.ci[1], 0)})</span><br>` +
-  `${money(e.cost_per_problem)}${e.cost_per_problem == null ? "" : " per problem"} · ${e.minutes_per_problem.toFixed(1)} min`;
+  (e.cost_per_problem == null ? "Run locally; not on OpenRouter, so no cost estimate" : `${cost(e)} per task`) +
+  ` · ${e.minutes_per_problem.toFixed(1)} min` +
+  (e.cost_estimated ? `<br><span class="muted">* Run locally: estimated cost on OpenRouter (${esc(e.cost_basis.replace("OpenRouter list price, ", ""))})</span>` : "");
 
 /* ---------- Header facts ---------- */
 function renderFacts() {
@@ -121,7 +124,7 @@ function renderTable() {
         <span class="fill" style="width:${e.solve_rate * 100}%;background:var(--${e.harness})"></span>
         <span class="ci" style="left:${e.ci[0] * 100}%;width:${(e.ci[1] - e.ci[0]) * 100}%"></span></span></div></td>
       <td class="num">${pct(e.pass_all, 0)}</td>
-      <td class="num${e.cost_per_problem == null ? " local" : ""}">${money(e.cost_per_problem)}</td>
+      <td class="num"${e.cost_estimated ? ' title="Run locally: estimated cost on OpenRouter"' : e.cost_per_problem == null ? ' title="Run locally; not on OpenRouter"' : ""}>${cost(e)}</td>
       <td class="num hide-sm">${e.minutes_per_problem.toFixed(1)} min</td>
     </tr>`;
     return main + (open ? `<tr class="details"><td colspan="7">${detailsHTML(e)}</td></tr>` : "");
@@ -165,8 +168,9 @@ function setupTable() {
 }
 
 /* ---------- Chart 1: accuracy against cost ---------- */
+// The Pareto frontier uses measured API costs only; estimated costs of local models are plotted but not part of it.
 function frontier(entries) {
-  const pts = entries.filter(e => e.cost_per_problem != null).sort((a, b) => a.cost_per_problem - b.cost_per_problem);
+  const pts = entries.filter(e => e.cost_per_problem != null && !e.cost_estimated).sort((a, b) => a.cost_per_problem - b.cost_per_problem);
   const out = [];
   for (const e of pts) if (!out.length || e.solve_rate > out[out.length - 1].solve_rate) out.push(e);
   return out;
@@ -176,9 +180,8 @@ function renderScatter() {
   const box = document.getElementById("c-scatter");
   const W = box.clientWidth, narrow = W < 560;
   const H = Math.round(Math.min(440, Math.max(320, W * 0.48)));
-  const m = { l: 40, r: 14, t: 12, b: 44 };
-  const band = narrow ? 44 : 64, gap = 18;
-  const x0 = m.l + band + gap, x1 = W - m.r, y0 = H - m.b, y1 = m.t;
+  const m = { l: 40, r: 14, t: 12, b: 40 };
+  const x0 = m.l + 8, x1 = W - m.r, y0 = H - m.b, y1 = m.t;
   const lo = Math.log10(0.002), hi = Math.log10(0.4);
   const X = v => x0 + (Math.log10(v) - lo) / (hi - lo) * (x1 - x0);
   const Y = v => y0 - v * (y0 - y1);
@@ -193,31 +196,22 @@ function renderScatter() {
     el("line", { x1: X(t), x2: X(t), y1: y0, y2: y0 + 4, class: "baseline" }, svg);
     text(svg, X(t), y0 + 17, "$" + (t >= 0.1 ? t.toFixed(1) : t >= 0.01 ? t.toFixed(2) : t.toFixed(3)), { "text-anchor": "middle", class: "axis-label" });
   }
-  text(svg, (x0 + x1) / 2, H - 6, "API cost per problem (log scale)", { "text-anchor": "middle", class: "axis-label" });
-  // Local GPU band: no API cost, so these sit in their own column left of the cost axis.
-  const bx = m.l + band / 2;
-  el("rect", { x: m.l + 4, y: y1, width: band - 8, height: y0 - y1, rx: 6, style: "fill:var(--page)" }, svg);
-  text(svg, bx, y0 + 17, "local", { "text-anchor": "middle", class: "axis-label" });
-  text(svg, bx, H - 6, "GPU", { "text-anchor": "middle", class: "axis-label" });
+  text(svg, (x0 + x1) / 2, H - 4, "Cost per task (log scale)", { "text-anchor": "middle", class: "axis-label" });
 
-  const entries = DATA.entries;
-  const pos = e => e.cost_per_problem == null ? [bx, Y(e.solve_rate)] : [X(e.cost_per_problem), Y(e.solve_rate)];
+  const entries = DATA.entries.filter(e => e.cost_per_problem != null);
+  const pos = e => [X(e.cost_per_problem), Y(e.solve_rate)];
 
   const f = frontier(entries);
   let d = "";
-  f.forEach((e, i) => {
-    const [x, y] = pos(e);
-    if (i === 0) d += `M${x},${y}`;
-    else { d += `H${x}V${y}`; }
-  });
+  f.forEach((e, i) => { const [x, y] = pos(e); d += i === 0 ? `M${x},${y}` : `H${x}V${y}`; });
   el("path", { d, style: "fill:none;stroke:var(--muted);stroke-width:1.5;stroke-dasharray:4 4" }, svg);
 
   // Label placement: frontier first, then by solve rate; try 8 spots, skip if all collide.
   // The points and the frontier's segments are obstacles, so labels never sit on the dashed line.
   const obstacles = entries.map(e => { const [x, y] = pos(e); return { x: x - 7, y: y - 7, w: 14, h: 14 }; });
   for (let i = 1; i < f.length; i++) {
-    const [ax, ay] = pos(f[i - 1]), [bx2, by] = pos(f[i]);
-    obstacles.push({ x: ax, y: ay - 2, w: bx2 - ax, h: 4 }, { x: bx2 - 2, y: by, w: 4, h: ay - by });
+    const [ax, ay] = pos(f[i - 1]), [bx, by] = pos(f[i]);
+    obstacles.push({ x: ax, y: ay - 2, w: bx - ax, h: 4 }, { x: bx - 2, y: by, w: 4, h: ay - by });
   }
   const fits = r => r.x >= m.l && r.x + r.w <= W - 2 && r.y >= 0 && r.y + r.h <= y0 &&
     !obstacles.some(o => r.x < o.x + o.w && r.x + r.w > o.x && r.y < o.y + o.h && r.y + r.h > o.y);
@@ -225,21 +219,14 @@ function renderScatter() {
   const labels = el("g", {}, svg);
   for (const e of order) {
     const [x, y] = pos(e);
-    const s = short(e.model), w = s.length * 6.1 + 2, h = 13;
-    const local = e.cost_per_problem == null;
-    const spots0 = local
-      ? [[x + 9, y - h / 2, "start"], [x - 9 - w, y - h / 2, "start"]]
-      : [[x + 8, y - h / 2, "start"], [x - 8 - w, y - h / 2, "start"], [x - w / 2, y - 8 - h, "start"],
-        [x - w / 2, y + 8, "start"], [x + 6, y - 6 - h, "start"], [x + 6, y + 6, "start"],
-        [x - 6 - w, y - 6 - h, "start"], [x - 6 - w, y + 6, "start"]];
-    const spots = f.includes(e) && !local ? [spots0[1], spots0[2], spots0[6], spots0[3], spots0[7], ...spots0] : spots0;
+    const s = short(e.model) + (e.cost_estimated ? "*" : ""), w = s.length * 6.1 + 2, h = 13;
+    const all = [[x + 8, y - h / 2], [x - 8 - w, y - h / 2], [x - w / 2, y - 8 - h], [x - w / 2, y + 8],
+      [x + 6, y - 6 - h], [x + 6, y + 6], [x - 6 - w, y - 6 - h], [x - 6 - w, y + 6]];
+    // The line leaves each frontier point to the right, so those labels try the left and above first.
+    const spots = f.includes(e) ? [all[1], all[2], all[6], all[3], all[7], ...all] : all;
     for (const [lx, ly] of spots) {
       const r = { x: lx, y: ly, w, h };
-      if (local ? !obstacles.some(o => r.x < o.x + o.w && r.x + r.w > o.x && r.y < o.y + o.h && r.y + r.h > o.y) && r.y >= 0 : fits(r)) {
-        obstacles.push(r);
-        text(labels, lx, ly + 10, s);
-        break;
-      }
+      if (fits(r)) { obstacles.push(r); text(labels, lx, ly + 10, s); break; }
     }
   }
   const dots = el("g", {}, svg);
@@ -281,7 +268,7 @@ function renderLift() {
     text(svg, W - annW, y - 1, `+${Math.round(p.gain * 100)} pts`, { style: "fill:var(--ink);font-weight:600;font-size:12px" });
     text(svg, W - annW, y + 13, `${mult.toFixed(1)}× cost`, { class: "axis-label" });
     const html = `<b>${esc(p.model)}</b>One call ${pct(p.one.solve_rate)} → Agent ${pct(p.agent.solve_rate)}<br>` +
-      `<span class="muted">Cost per problem ${money(p.one.cost_per_problem)} → ${money(p.agent.cost_per_problem)}</span>`;
+      `<span class="muted">Cost per task ${money(p.one.cost_per_problem)} → ${money(p.agent.cost_per_problem)}</span>`;
     hover(el("rect", { x: 0, y: y - row / 2, width: W, height: row, class: "hit" }, svg), html);
   });
 }
