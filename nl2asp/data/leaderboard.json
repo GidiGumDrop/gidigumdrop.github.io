@@ -1,0 +1,690 @@
+{
+ "generated": "2026-11-11",
+ "harnesses": {
+  "agent": {
+   "name": "Agent",
+   "description": "ReAct agent (agentic-python-coder) with a persistent Python kernel and the clingo skills file",
+   "output_cap": 16384
+  },
+  "one-call": {
+   "name": "One call",
+   "description": "A single model request with the problem; no tools, no skills file",
+   "output_cap": 65536
+  }
+ },
+ "datasets": {
+  "ASPBench": 30,
+  "GridPuzzles": 24,
+  "ZebraLogic": 6,
+  "Sudoku-Bench": 25,
+  "LPCP": 12
+ },
+ "entries": [
+  {
+   "id": "agent__gpt-5-6-sol",
+   "model": "GPT-5.6 Sol",
+   "harness": "agent",
+   "open_weights": false,
+   "local": false,
+   "runs": 3,
+   "problems": 97,
+   "solve_rate": 0.9828,
+   "ci": [
+    0.9656,
+    0.9966
+   ],
+   "run_rates": [
+    0.9794,
+    0.9897,
+    0.9794
+   ],
+   "pass_all": 0.9485,
+   "pass_any": 1.0,
+   "cost_per_problem": 0.2065,
+   "minutes_per_problem": 1.9058,
+   "datasets": {
+    "ASPBench": 1.0,
+    "GridPuzzles": 0.9583,
+    "ZebraLogic": 0.9444,
+    "Sudoku-Bench": 1.0,
+    "LPCP": 0.9722
+   },
+   "outcomes": {
+    "solved": 286,
+    "wrong": 2,
+    "error": 3,
+    "timeout": 0
+   },
+   "rank": 1
+  },
+  {
+   "id": "agent__claude-opus-5-5",
+   "model": "Claude Opus 5.5",
+   "harness": "agent",
+   "open_weights": false,
+   "local": false,
+   "runs": 3,
+   "problems": 97,
+   "solve_rate": 0.9725,
+   "ci": [
+    0.945,
+    0.9931
+   ],
+   "run_rates": [
+    0.9794,
+    0.9794,
+    0.9588
+   ],
+   "pass_all": 0.9485,
+   "pass_any": 0.9897,
+   "cost_per_problem": 0.24805,
+   "minutes_per_problem": 1.0031,
+   "datasets": {
+    "ASPBench": 0.9444,
+    "GridPuzzles": 0.9722,
+    "ZebraLogic": 1.0,
+    "Sudoku-Bench": 1.0,
+    "LPCP": 0.9722
+   },
+   "outcomes": {
+    "solved": 283,
+    "wrong": 6,
+    "error": 2,
+    "timeout": 0
+   },
+   "rank": 1
+  },
+  {
+   "id": "one-call__gpt-5-6-sol",
+   "model": "GPT-5.6 Sol",
+   "harness": "one-call",
+   "open_weights": false,
+   "local": false,
+   "runs": 3,
+   "problems": 97,
+   "solve_rate": 0.9416,
+   "ci": [
+    0.9072,
+    0.9725
+   ],
+   "run_rates": [
+    0.9381,
+    0.9278,
+    0.9588
+   ],
+   "pass_all": 0.866,
+   "pass_any": 0.9897,
+   "cost_per_problem": 0.08155,
+   "minutes_per_problem": 0.6338,
+   "datasets": {
+    "ASPBench": 0.9444,
+    "GridPuzzles": 0.9583,
+    "ZebraLogic": 0.9444,
+    "Sudoku-Bench": 0.9467,
+    "LPCP": 0.8889
+   },
+   "outcomes": {
+    "solved": 274,
+    "wrong": 8,
+    "error": 9,
+    "timeout": 0
+   },
+   "rank": 1
+  },
+  {
+   "id": "agent__gemini-3-8-flash",
+   "model": "Gemini 3.8 Flash",
+   "harness": "agent",
+   "open_weights": false,
+   "local": false,
+   "runs": 3,
+   "problems": 97,
+   "solve_rate": 0.9381,
+   "ci": [
+    0.9038,
+    0.9691
+   ],
+   "run_rates": [
+    0.9278,
+    0.9381,
+    0.9485
+   ],
+   "pass_all": 0.8557,
+   "pass_any": 1.0,
+   "cost_per_problem": 0.21637,
+   "minutes_per_problem": 4.0729,
+   "datasets": {
+    "ASPBench": 0.9111,
+    "GridPuzzles": 1.0,
+    "ZebraLogic": 1.0,
+    "Sudoku-Bench": 0.9467,
+    "LPCP": 0.8333
+   },
+   "outcomes": {
+    "solved": 273,
+    "wrong": 1,
+    "error": 13,
+    "timeout": 4
+   },
+   "rank": 1
+  },
+  {
+   "id": "one-call__claude-opus-5-5",
+   "model": "Claude Opus 5.5",
+   "harness": "one-call",
+   "open_weights": false,
+   "local": false,
+   "runs": 3,
+   "problems": 97,
+   "solve_rate": 0.9003,
+   "ci": [
+    0.8522,
+    0.9416
+   ],
+   "run_rates": [
+    0.8763,
+    0.9278,
+    0.8969
+   ],
+   "pass_all": 0.8144,
+   "pass_any": 0.9691,
+   "cost_per_problem": 0.06177,
+   "minutes_per_problem": 0.4078,
+   "datasets": {
+    "ASPBench": 0.9111,
+    "GridPuzzles": 0.8472,
+    "ZebraLogic": 1.0,
+    "Sudoku-Bench": 0.9467,
+    "LPCP": 0.8333
+   },
+   "outcomes": {
+    "solved": 262,
+    "wrong": 21,
+    "error": 8,
+    "timeout": 0
+   },
+   "rank": 3
+  },
+  {
+   "id": "agent__glm-5-3-high",
+   "model": "GLM-5.3 (high)",
+   "harness": "agent",
+   "open_weights": true,
+   "local": false,
+   "runs": 3,
+   "problems": 97,
+   "solve_rate": 0.8832,
+   "ci": [
+    0.8282,
+    0.9313
+   ],
+   "run_rates": [
+    0.866,
+    0.8969,
+    0.8866
+   ],
+   "pass_all": 0.8041,
+   "pass_any": 0.9485,
+   "cost_per_problem": 0.13022,
+   "minutes_per_problem": 5.036,
+   "datasets": {
+    "ASPBench": 0.9556,
+    "GridPuzzles": 0.9583,
+    "ZebraLogic": 0.9444,
+    "Sudoku-Bench": 0.9067,
+    "LPCP": 0.4722
+   },
+   "outcomes": {
+    "solved": 257,
+    "wrong": 4,
+    "error": 15,
+    "timeout": 15
+   },
+   "rank": 3
+  },
+  {
+   "id": "agent__deepseek-v4-1-flash",
+   "model": "DeepSeek V4.1 Flash",
+   "harness": "agent",
+   "open_weights": true,
+   "local": false,
+   "runs": 3,
+   "problems": 97,
+   "solve_rate": 0.8729,
+   "ci": [
+    0.8247,
+    0.9175
+   ],
+   "run_rates": [
+    0.8763,
+    0.8866,
+    0.8557
+   ],
+   "pass_all": 0.7216,
+   "pass_any": 0.9691,
+   "cost_per_problem": 0.0342,
+   "minutes_per_problem": 4.3686,
+   "datasets": {
+    "ASPBench": 0.9667,
+    "GridPuzzles": 0.875,
+    "ZebraLogic": 0.8889,
+    "Sudoku-Bench": 0.8267,
+    "LPCP": 0.7222
+   },
+   "outcomes": {
+    "solved": 254,
+    "wrong": 18,
+    "error": 10,
+    "timeout": 9
+   },
+   "rank": 3
+  },
+  {
+   "id": "agent__claude-haiku-5-5",
+   "model": "Claude Haiku 5.5",
+   "harness": "agent",
+   "open_weights": false,
+   "local": false,
+   "runs": 3,
+   "problems": 97,
+   "solve_rate": 0.8213,
+   "ci": [
+    0.756,
+    0.8797
+   ],
+   "run_rates": [
+    0.866,
+    0.7938,
+    0.8041
+   ],
+   "pass_all": 0.6804,
+   "pass_any": 0.9278,
+   "cost_per_problem": 0.01892,
+   "minutes_per_problem": 1.9605,
+   "datasets": {
+    "ASPBench": 0.8889,
+    "GridPuzzles": 0.7917,
+    "ZebraLogic": 0.7222,
+    "Sudoku-Bench": 0.7733,
+    "LPCP": 0.8611
+   },
+   "outcomes": {
+    "solved": 239,
+    "wrong": 36,
+    "error": 14,
+    "timeout": 2
+   },
+   "rank": 5
+  },
+  {
+   "id": "agent__muse-glimmer-30b",
+   "model": "Muse Glimmer 30B",
+   "harness": "agent",
+   "open_weights": true,
+   "local": false,
+   "runs": 3,
+   "problems": 97,
+   "solve_rate": 0.7354,
+   "ci": [
+    0.6564,
+    0.8076
+   ],
+   "run_rates": [
+    0.732,
+    0.7526,
+    0.7216
+   ],
+   "pass_all": 0.6186,
+   "pass_any": 0.8454,
+   "cost_per_problem": 0.10416,
+   "minutes_per_problem": 8.1301,
+   "datasets": {
+    "ASPBench": 0.9333,
+    "GridPuzzles": 0.7639,
+    "ZebraLogic": 0.6111,
+    "Sudoku-Bench": 0.6667,
+    "LPCP": 0.3889
+   },
+   "outcomes": {
+    "solved": 214,
+    "wrong": 53,
+    "error": 4,
+    "timeout": 20
+   },
+   "rank": 8
+  },
+  {
+   "id": "one-call__gemini-3-8-flash",
+   "model": "Gemini 3.8 Flash",
+   "harness": "one-call",
+   "open_weights": false,
+   "local": false,
+   "runs": 3,
+   "problems": 97,
+   "solve_rate": 0.6873,
+   "ci": [
+    0.6151,
+    0.7595
+   ],
+   "run_rates": [
+    0.7113,
+    0.6495,
+    0.701
+   ],
+   "pass_all": 0.4742,
+   "pass_any": 0.8866,
+   "cost_per_problem": 0.03525,
+   "minutes_per_problem": 1.1009,
+   "datasets": {
+    "ASPBench": 0.9111,
+    "GridPuzzles": 0.3333,
+    "ZebraLogic": 0.8889,
+    "Sudoku-Bench": 0.6933,
+    "LPCP": 0.7222
+   },
+   "outcomes": {
+    "solved": 200,
+    "wrong": 14,
+    "error": 77,
+    "timeout": 0
+   },
+   "rank": 8
+  },
+  {
+   "id": "agent__gpt-5-6-luna",
+   "model": "GPT-5.6 Luna",
+   "harness": "agent",
+   "open_weights": false,
+   "local": false,
+   "runs": 3,
+   "problems": 97,
+   "solve_rate": 0.6735,
+   "ci": [
+    0.5979,
+    0.7491
+   ],
+   "run_rates": [
+    0.6392,
+    0.701,
+    0.6804
+   ],
+   "pass_all": 0.4639,
+   "pass_any": 0.8351,
+   "cost_per_problem": 0.04008,
+   "minutes_per_problem": 3.3442,
+   "datasets": {
+    "ASPBench": 0.9111,
+    "GridPuzzles": 0.7083,
+    "ZebraLogic": 0.0556,
+    "Sudoku-Bench": 0.68,
+    "LPCP": 0.3056
+   },
+   "outcomes": {
+    "solved": 196,
+    "wrong": 62,
+    "error": 30,
+    "timeout": 3
+   },
+   "rank": 9
+  },
+  {
+   "id": "one-call__claude-haiku-5-5",
+   "model": "Claude Haiku 5.5",
+   "harness": "one-call",
+   "open_weights": false,
+   "local": false,
+   "runs": 3,
+   "problems": 97,
+   "solve_rate": 0.5911,
+   "ci": [
+    0.5292,
+    0.6564
+   ],
+   "run_rates": [
+    0.6289,
+    0.6082,
+    0.5361
+   ],
+   "pass_all": 0.268,
+   "pass_any": 0.8763,
+   "cost_per_problem": 0.00351,
+   "minutes_per_problem": 0.4937,
+   "datasets": {
+    "ASPBench": 0.6444,
+    "GridPuzzles": 0.6528,
+    "ZebraLogic": 0.6667,
+    "Sudoku-Bench": 0.5067,
+    "LPCP": 0.4722
+   },
+   "outcomes": {
+    "solved": 172,
+    "wrong": 36,
+    "error": 83,
+    "timeout": 0
+   },
+   "rank": 10
+  },
+  {
+   "id": "agent__qwen-3-8-27b",
+   "model": "Qwen 3.8 27B",
+   "harness": "agent",
+   "open_weights": true,
+   "local": true,
+   "runs": 3,
+   "problems": 97,
+   "solve_rate": 0.512,
+   "ci": [
+    0.4296,
+    0.5911
+   ],
+   "run_rates": [
+    0.5155,
+    0.5464,
+    0.4742
+   ],
+   "pass_all": 0.3299,
+   "pass_any": 0.6804,
+   "cost_per_problem": null,
+   "minutes_per_problem": 18.233,
+   "datasets": {
+    "ASPBench": 0.7111,
+    "GridPuzzles": 0.75,
+    "ZebraLogic": 0.0556,
+    "Sudoku-Bench": 0.36,
+    "LPCP": 0.0833
+   },
+   "outcomes": {
+    "solved": 149,
+    "wrong": 20,
+    "error": 15,
+    "timeout": 107
+   },
+   "rank": 12
+  },
+  {
+   "id": "agent__gemma-4-26b-a4b",
+   "model": "Gemma 4 26B A4B",
+   "harness": "agent",
+   "open_weights": true,
+   "local": false,
+   "runs": 3,
+   "problems": 97,
+   "solve_rate": 0.2577,
+   "ci": [
+    0.1959,
+    0.3265
+   ],
+   "run_rates": [
+    0.2474,
+    0.268,
+    0.2577
+   ],
+   "pass_all": 0.0825,
+   "pass_any": 0.4536,
+   "cost_per_problem": 0.05165,
+   "minutes_per_problem": 16.1593,
+   "datasets": {
+    "ASPBench": 0.3111,
+    "GridPuzzles": 0.3333,
+    "ZebraLogic": 0.0,
+    "Sudoku-Bench": 0.2667,
+    "LPCP": 0.0833
+   },
+   "outcomes": {
+    "solved": 75,
+    "wrong": 15,
+    "error": 92,
+    "timeout": 109
+   },
+   "rank": 14
+  },
+  {
+   "id": "one-call__gpt-5-6-luna",
+   "model": "GPT-5.6 Luna",
+   "harness": "one-call",
+   "open_weights": false,
+   "local": false,
+   "runs": 3,
+   "problems": 97,
+   "solve_rate": 0.2165,
+   "ci": [
+    0.1649,
+    0.268
+   ],
+   "run_rates": [
+    0.2062,
+    0.2371,
+    0.2062
+   ],
+   "pass_all": 0.0206,
+   "pass_any": 0.4536,
+   "cost_per_problem": 0.00424,
+   "minutes_per_problem": 0.5637,
+   "datasets": {
+    "ASPBench": 0.3,
+    "GridPuzzles": 0.1806,
+    "ZebraLogic": 0.1667,
+    "Sudoku-Bench": 0.2133,
+    "LPCP": 0.1111
+   },
+   "outcomes": {
+    "solved": 63,
+    "wrong": 49,
+    "error": 179,
+    "timeout": 0
+   },
+   "rank": 14
+  },
+  {
+   "id": "agent__nemotron-3-5-lightning",
+   "model": "Nemotron 3.5 Lightning",
+   "harness": "agent",
+   "open_weights": true,
+   "local": true,
+   "runs": 3,
+   "problems": 97,
+   "solve_rate": 0.1753,
+   "ci": [
+    0.1237,
+    0.2302
+   ],
+   "run_rates": [
+    0.1546,
+    0.2062,
+    0.1649
+   ],
+   "pass_all": 0.0412,
+   "pass_any": 0.3402,
+   "cost_per_problem": null,
+   "minutes_per_problem": 21.2574,
+   "datasets": {
+    "ASPBench": 0.3111,
+    "GridPuzzles": 0.1389,
+    "ZebraLogic": 0.0,
+    "Sudoku-Bench": 0.1333,
+    "LPCP": 0.0833
+   },
+   "outcomes": {
+    "solved": 51,
+    "wrong": 45,
+    "error": 19,
+    "timeout": 176
+   },
+   "rank": 14
+  },
+  {
+   "id": "agent__granite-4-2-3b",
+   "model": "Granite 4.2 3B",
+   "harness": "agent",
+   "open_weights": true,
+   "local": true,
+   "runs": 3,
+   "problems": 97,
+   "solve_rate": 0.1271,
+   "ci": [
+    0.0756,
+    0.1821
+   ],
+   "run_rates": [
+    0.1443,
+    0.1237,
+    0.1134
+   ],
+   "pass_all": 0.0515,
+   "pass_any": 0.2268,
+   "cost_per_problem": null,
+   "minutes_per_problem": 18.74,
+   "datasets": {
+    "ASPBench": 0.3333,
+    "GridPuzzles": 0.0972,
+    "ZebraLogic": 0.0,
+    "Sudoku-Bench": 0.0,
+    "LPCP": 0.0
+   },
+   "outcomes": {
+    "solved": 37,
+    "wrong": 105,
+    "error": 37,
+    "timeout": 112
+   },
+   "rank": 15
+  },
+  {
+   "id": "agent__granite-4-2-8b",
+   "model": "Granite 4.2 8B",
+   "harness": "agent",
+   "open_weights": true,
+   "local": true,
+   "runs": 3,
+   "problems": 97,
+   "solve_rate": 0.0309,
+   "ci": [
+    0.0137,
+    0.0515
+   ],
+   "run_rates": [
+    0.0412,
+    0.0206,
+    0.0309
+   ],
+   "pass_all": 0.0,
+   "pass_any": 0.0928,
+   "cost_per_problem": null,
+   "minutes_per_problem": 24.3182,
+   "datasets": {
+    "ASPBench": 0.0889,
+    "GridPuzzles": 0.0139,
+    "ZebraLogic": 0.0,
+    "Sudoku-Bench": 0.0,
+    "LPCP": 0.0
+   },
+   "outcomes": {
+    "solved": 9,
+    "wrong": 5,
+    "error": 15,
+    "timeout": 262
+   },
+   "rank": 18
+  }
+ ]
+}

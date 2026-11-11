@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NL-to-ASP Benchmark</title>
+<meta name="description" content="Leaderboard for the NL-to-ASP benchmark: can a language model turn a natural-language combinatorial problem into a working clingo program?">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="wrap hero">
+  <p class="kicker">Benchmark · leaderboard</p>
+  <h1>NL-to-ASP</h1>
+  <p class="lede">Can a language model turn a natural-language combinatorial problem into a working
+    <a href="https://potassco.org/clingo/">clingo</a> program? Each entry is a <em>harness</em> (how the model is
+    run) paired with a <em>model</em>. The program it writes must solve the problem through Answer Set Programming
+    and print an answer that the problem's validator accepts.</p>
+  <ul class="facts" id="facts" aria-label="Benchmark at a glance"></ul>
+</header>
+
+<main class="wrap">
+  <section id="leaderboard" aria-labelledby="lb-h">
+    <div class="section-head">
+      <h2 id="lb-h">Leaderboard</h2>
+      <div class="chips" role="group" aria-label="Filter by harness">
+        <button type="button" class="chip" data-filter="all" aria-pressed="true">All</button>
+        <button type="button" class="chip" data-filter="agent" aria-pressed="false">Agent</button>
+        <button type="button" class="chip" data-filter="one-call" aria-pressed="false">One call</button>
+      </div>
+    </div>
+    <p class="note">Solve rate over 3 runs × 97 problems, with its 95% interval. <em>Every run</em>: share of problems solved in all 3 runs. Cost and time are per problem run. Entries whose intervals overlap share a rank. Click a row for its per-dataset results.</p>
+    <div class="table-scroll">
+      <table class="lb" id="lb">
+        <thead>
+          <tr>
+            <th scope="col" class="num" data-sort="rank">Rank</th>
+            <th scope="col" data-sort="model">Model</th>
+            <th scope="col" class="hide-sm" data-sort="harness">Harness</th>
+            <th scope="col" class="rate-col" data-sort="solve_rate">Solve rate</th>
+            <th scope="col" class="num" data-sort="pass_all" title="Share of problems solved in all 3 runs">Every run</th>
+            <th scope="col" class="num" data-sort="cost_per_problem">Cost</th>
+            <th scope="col" class="num hide-sm" data-sort="minutes_per_problem">Time</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="charts-h">
+    <h2 id="charts-h" class="visually-hidden">Charts</h2>
+    <div class="grid">
+      <figure class="card wide">
+        <figcaption>
+          <h3>Accuracy against cost</h3>
+          <p>The best-value entries (dashed line) include the one-call runs of the frontier models. The agent only
+            pays for itself at the very top and for smaller models.</p>
+        </figcaption>
+        <div class="legend" aria-hidden="true">
+          <span><i class="dot agent"></i>Agent</span>
+          <span><i class="dot one-call"></i>One call</span>
+          <span><i class="dash"></i>Best value so far</span>
+        </div>
+        <div class="chart" id="c-scatter" role="img" aria-label="Scatter plot of solve rate against cost per problem, log scale"></div>
+      </figure>
+
+      <figure class="card">
+        <figcaption>
+          <h3>What the agent harness adds</h3>
+          <p>The same model run with one call and then with the agent. The weaker the model, the bigger the gain.</p>
+        </figcaption>
+        <div class="legend" aria-hidden="true">
+          <span><i class="dot one-call"></i>One call</span>
+          <span><i class="dot agent"></i>Agent</span>
+        </div>
+        <div class="chart" id="c-lift" role="img" aria-label="Solve rate of each model with one call and with the agent"></div>
+      </figure>
+
+      <figure class="card">
+        <figcaption>
+          <h3>Accuracy by dataset</h3>
+          <p>LPCP separates models most; ZebraLogic collapses for some mid-tier models. ASPBench is close to
+            saturated.</p>
+        </figcaption>
+        <div class="chart" id="c-heat" role="img" aria-label="Heatmap of solve rate per entry and dataset"></div>
+      </figure>
+
+      <figure class="card wide">
+        <figcaption>
+          <h3>How runs end</h3>
+          <p>Strong models rarely fail. Mid-tier models fail by answering wrongly, local models by running out of
+            time, and one-call runs by writing programs that crash.</p>
+        </figcaption>
+        <div class="legend" aria-hidden="true">
+          <span><i class="sw o-solved"></i>Solved</span>
+          <span><i class="sw o-wrong"></i>Wrong answer</span>
+          <span><i class="sw o-error"></i>Program or harness error</span>
+          <span><i class="sw o-timeout"></i>Timed out</span>
+        </div>
+        <div class="chart" id="c-outcomes" role="img" aria-label="Share of runs per outcome for each entry"></div>
+      </figure>
+    </div>
+  </section>
+
+  <section id="about" aria-labelledby="about-h">
+    <h2 id="about-h">About the benchmark</h2>
+    <div class="about">
+      <div>
+        <h3>Scoring</h3>
+        <ul>
+          <li>The model gets the problem text only. Its program must solve the problem with clingo and print the
+            answer as JSON.</li>
+          <li>We run the saved program (120 s limit) and pass its output to the problem's validator: pass or fail.</li>
+          <li>Each entry is run 3 times on all 97 problems. The solve rate is the mean; the interval is a 95%
+            bootstrap over problems.</li>
+          <li>Time limit per problem: ASPBench 20 min, GridPuzzles 10–25 min by size, ZebraLogic, Sudoku-Bench and
+            LPCP 30 min.</li>
+          <li>Cost is the measured API cost per problem run. Locally served models show <em>local GPU</em>.</li>
+        </ul>
+        <h3>Harnesses</h3>
+        <dl id="harnesses"></dl>
+      </div>
+      <div>
+        <h3>Datasets</h3>
+        <table class="ds">
+          <thead><tr><th scope="col">Dataset</th><th scope="col" class="num">Problems</th><th scope="col">Checked by</th></tr></thead>
+          <tbody>
+            <tr><td>ASPBench</td><td class="num" data-ds="ASPBench"></td><td>constraint check</td></tr>
+            <tr><td>GridPuzzles</td><td class="num" data-ds="GridPuzzles"></td><td>exact match</td></tr>
+            <tr><td>ZebraLogic</td><td class="num" data-ds="ZebraLogic"></td><td>clue check with clingo</td></tr>
+            <tr><td><a href="https://github.com/SakanaAI/Sudoku-Bench">Sudoku-Bench</a></td><td class="num" data-ds="Sudoku-Bench"></td><td>exact match, unique solution</td></tr>
+            <tr><td><a href="https://github.com/lpcp-contest">LP/CP Contest</a></td><td class="num" data-ds="LPCP"></td><td>exact match, unique answer</td></tr>
+          </tbody>
+        </table>
+        <h3>Known issues</h3>
+        <ul>
+          <li><strong>Tower of Hanoi (ASPBench):</strong> the validator requires 19 moves; the true minimum is 16,
+            so 16-move answers fail.</li>
+          <li><strong>Dungeon generation (ASPBench):</strong> the validator requires each trap type exactly once,
+            which the statement does not.</li>
+          <li><strong>GridPuzzles:</strong> exact match against one known solution; uniqueness is not verified.</li>
+        </ul>
+        <p class="note">Both affect every entry equally.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap foot">
+  <span id="updated"></span>
+  <span>Data: <a href="data/leaderboard.json">leaderboard.json</a></span>
+</footer>
+
+<div class="tip" id="tip" role="tooltip" hidden></div>
+<script src="app.js" defer></script>
+</body>
+</html>
